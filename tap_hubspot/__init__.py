@@ -62,6 +62,9 @@ CONFIG = {
     "include_inactives": None,
 }
 
+V2_SCHEMAS = ['forms', 'engagements_all']
+HAS_PROPERTIES = ['companies', 'deals', 'contacts', 'meetings']
+
 ENDPOINTS = {
     # "contacts_properties":  "/properties/v1/contacts/properties",
     # "contacts_all":         "/contacts/v1/lists/all/contacts/all",

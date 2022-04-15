@@ -1,46 +1,12 @@
 {
   "type": "object",
   "properties": {
-    "pipelineId": {
+    "id": {
       "type": ["null", "string"]
     },
-    "stages": {
-      "type": ["null", "array"],
-      "items": {
-        "type": "object",
-        "properties": {
-          "stageId": {
-            "type": ["null", "string"]
-          },
-          "label": {
-            "type": ["null", "string"]
-          },
-          "probability": {
-            "type": ["null", "number"]
-          },
-          "active": {
-            "type": ["null", "boolean"]
-          },
-          "displayOrder": {
-            "type": ["null", "integer"]
-          },
-          "closedWon": {
-            "type": ["null", "boolean"]
-          }
-        }
-      }    
-    },
-    "label": {
-      "type": ["null", "string"]
-    },
-    "active": {
-      "type": ["null", "boolean"]
-    },
-    "displayOrder": {
-      "type": ["null", "integer"]
-    },
-    "staticDefault": {
-      "type": ["null", "boolean"]      
+    "updatedAt": {
+      "type": ["null", "string"],
+      "format": "date-time"
     }
   }
 }

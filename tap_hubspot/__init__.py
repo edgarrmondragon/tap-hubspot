@@ -991,6 +991,46 @@ def sync_deal_pipelines(STATE, ctx):
     singer.write_state(STATE)
     return STATE
 
+def sync_v3_properties(STATE, ctx):
+    LOGGER.info(ctx)
+    catalog = ctx.get_catalog_from_id(singer.get_currently_syncing(STATE))
+    mdata = metadata.to_map(catalog.get('metadata'))
+    name = ctx.get_stream_name()
+    schema = load_schema(name)
+    bookmark_key = 'updatedAt'
+    primary_keys = ['id']
+    start = get_start(STATE, name, bookmark_key)
+
+    singer.write_schema(name, schema, primary_keys, [bookmark_key], catalog.get('stream_alias'))
+
+    LOGGER.info(f"sync_{name} from %s", start)
+    params = {}
+    req = request(get_url(name), params).json()
+
+    while True:
+        data = req['results']
+        next = False
+        if 'paging' in req:
+            next = req['paging']['next']['link']
+
+        time_extracted = utils.now()
+
+        with Transformer(UNIX_MILLISECONDS_INTEGER_DATETIME_PARSING) as bumble_bee:
+            for row in data:
+                record = bumble_bee.transform(row, schema, mdata)
+                if record[bookmark_key] >= max_bk_value:
+                    max_bk_value = record[bookmark_key]
+
+                if record[bookmark_key] >= start:
+                    singer.write_record(name, record, catalog.get('stream_alias'), time_extracted=time_extracted)
+        if not next:
+            break
+        req = request(next).json()
+
+    STATE = singer.write_bookmark(STATE, 'meetings', bookmark_key, max_bk_value)
+    singer.write_state(STATE)
+    return STATE
+
 @attr.s
 class Stream(object):
     tap_stream_id = attr.ib()
@@ -1005,17 +1045,19 @@ STREAMS = [
     # Stream('email_events', sync_email_events, ['id'], 'startTimestamp', 'INCREMENTAL'),
 
     # Do these last as they are full table
-    Stream('forms', sync_forms, ['guid'], 'updatedAt', 'FULL_TABLE'),
-    Stream('workflows', sync_workflows, ['id'], 'updatedAt', 'FULL_TABLE'),
-    Stream('owners', sync_owners, ["id"], 'updatedAt', 'FULL_TABLE'),
+    Stream('meetings', sync_companies, ['id'], 'createdAt', 'FULL_TABLE'),
+
+    # Stream('forms', sync_forms, ['guid'], 'updatedAt', 'FULL_TABLE'),
+    # Stream('workflows', sync_workflows, ['id'], 'updatedAt', 'FULL_TABLE'),
+    # Stream('owners', sync_owners, ["id"], 'updatedAt', 'FULL_TABLE'),
     # Stream('campaigns', sync_campaigns, ["id"], None, 'FULL_TABLE'),
     # Stream('contact_lists', sync_contact_lists, ["listId"], 'updatedAt', 'FULL_TABLE'),
-    Stream('contacts', sync_contacts, ["vid"], 'versionTimestamp', 'FULL_TABLE'),
-    Stream('companies', sync_companies, ["companyId"], 'hs_lastmodifieddate', 'FULL_TABLE'),
-    Stream('deals', sync_deals, ["dealId"], 'hs_lastmodifieddate', 'FULL_TABLE'),
-    Stream('deal_pipelines', sync_deal_pipelines, ['pipelineId'], None, 'FULL_TABLE'),
-    Stream('engagements', sync_engagements, ["engagement_id"], 'lastUpdated', 'FULL_TABLE'),
-    Stream('meetings', sync_meetings, ["id"], 'updatedAt', 'FULL_TABLE')
+    # Stream('contacts', sync_contacts, ["vid"], 'versionTimestamp', 'FULL_TABLE'),
+    # Stream('companies', sync_companies, ["companyId"], 'hs_lastmodifieddate', 'FULL_TABLE'),
+    # Stream('deals', sync_deals, ["dealId"], 'hs_lastmodifieddate', 'FULL_TABLE'),
+    # Stream('deal_pipelines', sync_deal_pipelines, ['pipelineId'], None, 'FULL_TABLE'),
+    # Stream('engagements', sync_engagements, ["engagement_id"], 'lastUpdated', 'FULL_TABLE'),
+    # Stream('meetings', sync_meetings, ["id"], 'updatedAt', 'FULL_TABLE')
 ]
 
 def get_streams_to_sync(streams, state):

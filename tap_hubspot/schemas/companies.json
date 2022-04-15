@@ -1,11 +1,12 @@
 {
   "type": "object",
   "properties": {
-    "portalId": {
-      "type": ["null", "integer"]
+    "id": {
+      "type": ["null", "string"]
     },
-    "companyId": {
-      "type": ["null", "integer"]
+    "updatedAt": {
+      "type": ["null", "string"],
+      "format": "date-time"
     }
   }
 }

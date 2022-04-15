@@ -63,40 +63,48 @@ CONFIG = {
 }
 
 ENDPOINTS = {
-    "contacts_properties":  "/properties/v1/contacts/properties",
-    "contacts_all":         "/contacts/v1/lists/all/contacts/all",
-    "contacts_recent":      "/contacts/v1/lists/recently_updated/contacts/recent",
-    "contacts_detail":      "/contacts/v1/contact/vids/batch/",
+    # "contacts_properties":  "/properties/v1/contacts/properties",
+    # "contacts_all":         "/contacts/v1/lists/all/contacts/all",
+    # "contacts_recent":      "/contacts/v1/lists/recently_updated/contacts/recent",
+    # "contacts_detail":      "/contacts/v1/contact/vids/batch/",
 
-    "companies_properties": "/companies/v2/properties",
-    "companies_all":        "/companies/v2/companies/paged",
-    "companies_recent":     "/companies/v2/companies/recent/modified",
-    "companies_detail":     "/companies/v2/companies/{company_id}",
-    "contacts_by_company":  "/companies/v2/companies/{company_id}/vids",
+    # "companies_properties": "/companies/v2/properties",
+    # "companies_all":        "/companies/v2/companies/paged",
+    # "companies_recent":     "/companies/v2/companies/recent/modified",
+    # "companies_detail":     "/companies/v2/companies/{company_id}",
+    # "contacts_by_company":  "/companies/v2/companies/{company_id}/vids",
 
-    "deals_properties":     "/properties/v1/deals/properties",
-    "deals_all":            "/deals/v1/deal/paged",
-    "deals_recent":         "/deals/v1/deal/recent/modified",
-    "deals_detail":         "/deals/v1/deal/{deal_id}",
+    # "deals_properties":     "/properties/v1/deals/properties",
+    # "deals_all":            "/deals/v1/deal/paged",
+    # "deals_recent":         "/deals/v1/deal/recent/modified",
+    # "deals_detail":         "/deals/v1/deal/{deal_id}",
 
-    "deals_v3_batch_read":  "/crm/v3/objects/deals/batch/read",
-    "deals_v3_properties":  "/crm/v3/properties/deals",
+    # "deals_v3_batch_read":  "/crm/v3/objects/deals/batch/read",
+    # "deals_v3_properties":  "/crm/v3/properties/deals",
 
-    "deal_pipelines":       "/deals/v1/pipelines",
+    # "deal_pipelines":       "/deals/v1/pipelines",
 
-    "campaigns_all":        "/email/public/v1/campaigns/by-id",
-    "campaigns_detail":     "/email/public/v1/campaigns/{campaign_id}",
+    # "campaigns_all":        "/email/public/v1/campaigns/by-id",
+    # "campaigns_detail":     "/email/public/v1/campaigns/{campaign_id}",
 
     "engagements_all":        "/engagements/v1/engagements/paged",
 
-    "subscription_changes": "/email/public/v1/subscriptions/timeline",
-    "email_events":         "/email/public/v1/events",
-    "contact_lists":        "/contacts/v1/lists",
+    # "subscription_changes": "/email/public/v1/subscriptions/timeline",
+    # "email_events":         "/email/public/v1/events",
+    # "contact_lists":        "/contacts/v1/lists",
     "forms":                "/forms/v2/forms",
-    "workflows":            "/automation/v3/workflows",
+    # "workflows":            "/automation/v3/workflows",
 
+    # Create v3 section
     "meetings":             "/crm/v3/objects/meetings",
-    "owners":               "/crm/v3/owners"
+    "companies":            "/crm/v3/objects/companies",
+    "deals":                "/crm/v3/objects/deals",
+    "owners":               "/crm/v3/owners",
+    "workflows":            "/automation/v3/workflows",
+    "contacts":             "/crm/v3/objects/contacts",
+    "deal_pipelines":       "/crm/v3/pipelines/deals",
+
+    "properties":          "/crm/v3/properties",
 }
 
 def get_start(state, tap_stream_id, bookmark_key):
@@ -990,15 +998,15 @@ class Stream(object):
 
 STREAMS = [
     # Do these first as they are incremental
-    Stream('subscription_changes', sync_subscription_changes, ['timestamp', 'portalId', 'recipient'], 'startTimestamp', 'INCREMENTAL'),
-    Stream('email_events', sync_email_events, ['id'], 'startTimestamp', 'INCREMENTAL'),
+    # Stream('subscription_changes', sync_subscription_changes, ['timestamp', 'portalId', 'recipient'], 'startTimestamp', 'INCREMENTAL'),
+    # Stream('email_events', sync_email_events, ['id'], 'startTimestamp', 'INCREMENTAL'),
 
     # Do these last as they are full table
     Stream('forms', sync_forms, ['guid'], 'updatedAt', 'FULL_TABLE'),
     Stream('workflows', sync_workflows, ['id'], 'updatedAt', 'FULL_TABLE'),
     Stream('owners', sync_owners, ["id"], 'updatedAt', 'FULL_TABLE'),
-    Stream('campaigns', sync_campaigns, ["id"], None, 'FULL_TABLE'),
-    Stream('contact_lists', sync_contact_lists, ["listId"], 'updatedAt', 'FULL_TABLE'),
+    # Stream('campaigns', sync_campaigns, ["id"], None, 'FULL_TABLE'),
+    # Stream('contact_lists', sync_contact_lists, ["listId"], 'updatedAt', 'FULL_TABLE'),
     Stream('contacts', sync_contacts, ["vid"], 'versionTimestamp', 'FULL_TABLE'),
     Stream('companies', sync_companies, ["companyId"], 'hs_lastmodifieddate', 'FULL_TABLE'),
     Stream('deals', sync_deals, ["dealId"], 'hs_lastmodifieddate', 'FULL_TABLE'),

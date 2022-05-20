@@ -22,14 +22,16 @@ from singer_sdk.streams import RESTStream
 from singer_sdk.authenticators import BearerTokenAuthenticator
 from singer_sdk import typing as th  # JSON schema typing helpers
 from tap_hubspot.client import HubspotStream
+from tap_hubspot.schemas.marketing import CampaignIds
 
 SCHEMAS_DIR = Path(__file__).parent / Path("./schemas")
 
 LOGGER = singer.get_logger()
 utc=pytz.UTC
 
-from schemas.marketing import (
-    emails
+from tap_hubspot.schemas.marketing import (
+    Emails,
+    CampaignIds
 )
 class MarketingStream(HubspotStream):
     records_jsonpath = "$.objects[*]"  # Or override `parse_response`.
@@ -49,12 +51,21 @@ class MarketingStream(HubspotStream):
                 return None
         return row
 
+    def get_url_params(
+        self, context: Optional[dict], next_page_token: Optional[Any]
+    ) -> Dict[str, Any]:
+        """Return a dictionary of values to be used in URL parameterization."""
+        params: dict = {}
+        if next_page_token:
+            params["offset"] = next_page_token
+        params['limit'] = 100
+        return params
+
 class MarketingEmailsStream(MarketingStream):
     version = "v1"
     name = "marketing_emails"
-    path = f"/marketing-emails/{version}/emails"
+    path = f"/marketing-emails/{version}/emails/with-statistics"
     primary_keys = ["id"]
-    schema_filepath = ""
     replication_key = "updated"
 
 
@@ -64,4 +75,43 @@ class MarketingEmailsStream(MarketingStream):
         return params
 
 
-    schema = emails.emails_schema
+    schema = Emails.schema
+
+
+class MarketingCampaignIds(MarketingStream):
+    version = "v1"
+    records_jsonpath = "$.campaigns[*]"
+    name = "campaign_ids"
+    path = f"/email/public/{version}/campaigns/by-id"
+    primary_keys = ["id"]
+    replication_method = "FULL_TABLE"
+    replication_key = ""
+
+    schema = CampaignIds.schema
+
+    def get_child_context(self, record: dict, context: Optional[dict]) -> dict:
+        """Return a context dictionary for child streams."""
+        return {
+            "campaign_id": record["id"],
+        }
+        """Return a context dictionary for child streams."""
+        return {
+            "campaign_id": record["id"],
+        }
+
+class MarketingCampaignIds(MarketingStream):
+    version = "v1"
+    records_jsonpath = "$.campaigns[*]"
+    name = "campaign_ids"
+    path = f"/email/public/{version}/campaigns/by-id"
+    primary_keys = ["id"]
+    replication_method = "FULL_TABLE"
+    replication_key = ""
+
+    schema = CampaignIds.schema
+
+    def get_child_context(self, record: dict, context: Optional[dict]) -> dict:
+        """Return a context dictionary for child streams."""
+        return {
+            "campaign_id": record["id"],
+        }

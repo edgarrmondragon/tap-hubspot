@@ -81,7 +81,7 @@ class MarketingEmailsStream(MarketingStream):
 class MarketingCampaignIdsStream(MarketingStream):
     version = "v1"
     records_jsonpath = "$.campaigns[*]"
-    name = "campaign_ids"
+    name = "v1_campaign_ids"
     path = f"/email/public/{version}/campaigns/by-id"
     primary_keys = ["id"]
     replication_method = "FULL_TABLE"
@@ -94,13 +94,8 @@ class MarketingCampaignIdsStream(MarketingStream):
         return {
             "campaign_id": record["id"],
         }
-        """Return a context dictionary for child streams."""
-        return {
-            "campaign_id": record["id"],
-        }
 
 class MarketingCampaignsStream(MarketingStream):
-    version = "v1"
     records_jsonpath = "$.[*]"
     name = "campaigns"
     path = "/email/public/v1/campaigns/{campaign_id}"
@@ -110,3 +105,6 @@ class MarketingCampaignsStream(MarketingStream):
     parent_stream_type = MarketingCampaignIdsStream
 
     schema = CampaignIds.schema
+
+
+

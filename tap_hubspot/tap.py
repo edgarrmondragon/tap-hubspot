@@ -53,7 +53,7 @@ STREAM_TYPES = [
     # MarketingFormsStream,
 
     # ## Events
-    # WebAnalyticsStream,
+    WebAnalyticsStream,
 
     ## Analytics
     AnalyticsViewsStream,

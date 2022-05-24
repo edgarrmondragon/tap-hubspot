@@ -57,7 +57,3 @@ class WebAnalyticsStream(EventsStream):
         params["objectId"] = context["contact_id"]
         return params
 
-    def parse_response(self, response: requests.Response) -> Iterable[dict]:
-        """Parse the response and return an iterator of result rows."""
-        data = response.json()
-        yield from extract_jsonpath(self.records_jsonpath, input=response.json())

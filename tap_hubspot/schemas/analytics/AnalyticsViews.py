@@ -6,7 +6,7 @@ schema = th.PropertiesList(
     th.Property("createdAt", th.NumberType),
     th.Property("creatorId", th.NumberType),
     th.Property("deletedAt", th.NumberType),
-    th.Property("updatedDate", th.DateType),
+    th.Property("updatedDate", th.DateTimeType),
     th.Property("updaterId", th.NumberType),
     th.Property("reportPropertyFilters",
         th.ArrayType(

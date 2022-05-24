@@ -75,9 +75,6 @@ class MarketingEmailsStream(MarketingStream):
     ) -> Dict[str, Any]:
         """Return a dictionary of values to be used in URL parameterization."""
         params = super().get_url_params(context, next_page_token)
-        # params['offset'] = params['limit']
-        # if not next_page_token:
-        # params["offset"] = next_page_token
         if not next_page_token:
             next_page_token = 0
         params["offset"] = params["limit"] + next_page_token
@@ -161,9 +158,8 @@ class MarketingCampaignsStream(MarketingStream):
 
 
 class MarketingFormsStream(MarketingStream):
+    name = "forms_v3"
     path = "/marketing/v3/forms/"
     primary_keys = ["id"]
-    parent_stream_type = MarketingCampaignIdsStream
-
     schema = Forms.schema
 

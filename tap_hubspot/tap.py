@@ -21,7 +21,8 @@ from tap_hubspot.streams import (
 from tap_hubspot.marketing_streams import (
     MarketingEmailsStream,
     MarketingCampaignIdsStream,
-    MarketingCampaignsStream
+    MarketingCampaignsStream,
+    MarketingFormsStream,
 )
 
 STREAM_TYPES = [
@@ -38,9 +39,10 @@ STREAM_TYPES = [
     # OwnersStream,
 
     ## Marketing
-    MarketingEmailsStream,
-    MarketingCampaignIdsStream,
-    MarketingCampaignsStream,
+    # MarketingEmailsStream,
+    # MarketingCampaignIdsStream,
+    # MarketingCampaignsStream,
+    MarketingFormsStream,
 
 ]
 

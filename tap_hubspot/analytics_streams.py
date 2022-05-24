@@ -38,17 +38,9 @@ class AnalyticsStream(HubspotStream):
     schema_filepath = ""
 
 class AnalyticsViewsStream(AnalyticsStream):
-    name = "WebAnalytics_v3"
-    path = "/events/v3/events/"
+    name = "analytics_views_v2"
+    path = "/analytics/v2/views"
     primary_keys = ["id"]
-    schema = WebAnalytics.schema
-    parent_stream_type = ContactsStream
-    ignore_parent_replication_key = False
-    replication_key = "occurredAt"
-
-    def get_url_params(self, context: Optional[dict], next_page_token: Optional[Any]) -> Dict[str, Any]:
-        params = super().get_url_params(context, next_page_token)
-        params["objectType"] = "contact"
-        params["objectId"] = context["contact_id"]
-        return params
+    schema = AnalyticsViews.schema
+    replication_key = "updatedDate"
 

@@ -108,6 +108,12 @@ class ContactsStream(HubspotStream):
             self.cached_schema, self.properties = self.get_custom_schema()
         return self.cached_schema
 
+    def get_child_context(self, record: dict, context: Optional[dict]) -> dict:
+        """Return a context dictionary for child streams."""
+        return {
+            "contact_id": record["id"],
+        }
+
 class PropertiesStream(HubspotStream):
     """Define custom stream."""
     schema_filepath = SCHEMAS_DIR / "properties.json"

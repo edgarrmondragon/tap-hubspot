@@ -31,16 +31,29 @@ utc=pytz.UTC
 
 from tap_hubspot.schemas.marketing import (
     Emails,
-    CampaignIds
+    CampaignIds,
+    Campaigns,
+    Forms
 )
 class MarketingStream(HubspotStream):
-    records_jsonpath = "$.objects[*]"  # Or override `parse_response`.
-    next_page_token_jsonpath = "$.offset"  # Or override `get_next_page_token`.
+    records_jsonpath = "$.results[*]"  # Or override `parse_response`.
+    next_page_token_jsonpath = "$.paging.next.after"  # Or override `get_next_page_token`.
     replication_key = "updatedAt"
     replication_method = "INCREMENTAL"
     cached_schema = None
     properties = []
     schema_filepath = ""
+
+
+class MarketingEmailsStream(MarketingStream):
+    records_jsonpath = "$.objects[*]"  # Or override `parse_response`.
+    next_page_token_jsonpath = "$.offset"  # Or override `get_next_page_token`.
+    version = "v1"
+    name = "marketing_emails_v1"
+    path = f"/marketing-emails/{version}/emails/with-statistics"
+    primary_keys = ["id"]
+    replication_key = "updated"
+
 
     def post_process(self, row: dict, context: Optional[dict]) -> dict:
         """As needed, append or transform raw data to match expected structure.
@@ -58,22 +71,8 @@ class MarketingStream(HubspotStream):
         params: dict = {}
         if next_page_token:
             params["offset"] = next_page_token
-        params['limit'] = 100
-        return params
-
-class MarketingEmailsStream(MarketingStream):
-    version = "v1"
-    name = "marketing_emails_v1"
-    path = f"/marketing-emails/{version}/emails/with-statistics"
-    primary_keys = ["id"]
-    replication_key = "updated"
-
-
-    def get_url_params(self, context: Optional[dict], next_page_token: Optional[Any]) -> Dict[str, Any]:
-        params = super().get_url_params(context, next_page_token)
         params['orderBy'] = "created"
         return params
-
 
     schema = Emails.schema
 
@@ -81,6 +80,7 @@ class MarketingEmailsStream(MarketingStream):
 class MarketingCampaignIdsStream(MarketingStream):
     version = "v1"
     records_jsonpath = "$.campaigns[*]"
+    next_page_token_jsonpath = "$.offset"  # Or override `get_next_page_token`.
     name = "campaign_ids_v1"
     path = f"/email/public/{version}/campaigns/by-id"
     primary_keys = ["id"]
@@ -88,6 +88,25 @@ class MarketingCampaignIdsStream(MarketingStream):
     replication_key = ""
 
     schema = CampaignIds.schema
+
+    def post_process(self, row: dict, context: Optional[dict]) -> dict:
+        """As needed, append or transform raw data to match expected structure.
+        Returns row, or None if row is to be excluded"""
+
+        if self.replication_key:
+            if row[self.replication_key] <= int(time.time()):
+                return None
+        return row
+
+    def get_url_params(
+        self, context: Optional[dict], next_page_token: Optional[Any]
+    ) -> Dict[str, Any]:
+        """Return a dictionary of values to be used in URL parameterization."""
+        params: dict = {}
+        if next_page_token:
+            params["offset"] = next_page_token
+        params['orderBy'] = "created"
+        return params
 
     def get_child_context(self, record: dict, context: Optional[dict]) -> dict:
         """Return a context dictionary for child streams."""
@@ -97,6 +116,7 @@ class MarketingCampaignIdsStream(MarketingStream):
 
 class MarketingCampaignsStream(MarketingStream):
     records_jsonpath = "$.[*]"
+    next_page_token_jsonpath = "$.offset"  # Or override `get_next_page_token`.
     name = "campaigns_v1"
     path = "/email/public/v1/campaigns/{campaign_id}"
     primary_keys = ["id"]
@@ -104,7 +124,33 @@ class MarketingCampaignsStream(MarketingStream):
     replication_key = ""
     parent_stream_type = MarketingCampaignIdsStream
 
-    schema = CampaignIds.schema
+    schema = Campaigns.schema
+
+    def post_process(self, row: dict, context: Optional[dict]) -> dict:
+        """As needed, append or transform raw data to match expected structure.
+        Returns row, or None if row is to be excluded"""
+
+        if self.replication_key:
+            if row[self.replication_key] <= int(time.time()):
+                return None
+        return row
+
+    def get_url_params(
+        self, context: Optional[dict], next_page_token: Optional[Any]
+    ) -> Dict[str, Any]:
+        """Return a dictionary of values to be used in URL parameterization."""
+        params: dict = {}
+        if next_page_token:
+            params["offset"] = next_page_token
+        params['orderBy'] = "created"
+        return params
 
 
+
+class MarketingFormsStream(MarketingStream):
+    path = "/marketing/v3/forms/"
+    primary_keys = ["id"]
+    parent_stream_type = MarketingCampaignIdsStream
+
+    schema = Forms.schema
 

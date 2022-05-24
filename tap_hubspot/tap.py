@@ -38,7 +38,7 @@ STREAM_TYPES = [
     # OwnersStream,
 
     ## Marketing
-    # MarketingEmailsStream,
+    MarketingEmailsStream,
     MarketingCampaignIdsStream,
     MarketingCampaignsStream,
 

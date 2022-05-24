@@ -47,13 +47,13 @@ STREAM_TYPES = [
     # OwnersStream,
 
     ## Marketing
-    MarketingEmailsStream,
-    MarketingCampaignIdsStream,
-    MarketingCampaignsStream,
-    MarketingFormsStream,
+    # MarketingEmailsStream,
+    # MarketingCampaignIdsStream,
+    # MarketingCampaignsStream,
+    # MarketingFormsStream,
 
-    ## Events
-    WebAnalyticsStream,
+    # ## Events
+    # WebAnalyticsStream,
 
     ## Analytics
     AnalyticsViewsStream,

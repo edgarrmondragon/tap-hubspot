@@ -63,7 +63,7 @@ class MarketingStream(HubspotStream):
 
 class MarketingEmailsStream(MarketingStream):
     version = "v1"
-    name = "marketing_emails"
+    name = "marketing_emails_v1"
     path = f"/marketing-emails/{version}/emails/with-statistics"
     primary_keys = ["id"]
     replication_key = "updated"
@@ -81,7 +81,7 @@ class MarketingEmailsStream(MarketingStream):
 class MarketingCampaignIdsStream(MarketingStream):
     version = "v1"
     records_jsonpath = "$.campaigns[*]"
-    name = "v1_campaign_ids"
+    name = "campaign_ids_v1"
     path = f"/email/public/{version}/campaigns/by-id"
     primary_keys = ["id"]
     replication_method = "FULL_TABLE"
@@ -97,7 +97,7 @@ class MarketingCampaignIdsStream(MarketingStream):
 
 class MarketingCampaignsStream(MarketingStream):
     records_jsonpath = "$.[*]"
-    name = "campaigns"
+    name = "campaigns_v1"
     path = "/email/public/v1/campaigns/{campaign_id}"
     primary_keys = ["id"]
     replication_method = "FULL_TABLE"

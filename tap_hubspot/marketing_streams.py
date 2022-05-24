@@ -1,5 +1,6 @@
 """Stream type classes for tap-hubspot."""
 # from black import Report
+from math import inf
 import requests
 import singer
 import json
@@ -53,7 +54,12 @@ class MarketingEmailsStream(MarketingStream):
     path = f"/marketing-emails/{version}/emails/with-statistics"
     primary_keys = ["id"]
     replication_key = "updated"
+    total_emails = inf
 
+    def parse_response(self, response: requests.Response) -> Iterable[dict]:
+        """Parse the response and return an iterator of result rows."""
+        self.total_emails = response.json()['total']
+        yield from extract_jsonpath(self.records_jsonpath, input=response.json())
 
     def post_process(self, row: dict, context: Optional[dict]) -> dict:
         """As needed, append or transform raw data to match expected structure.
@@ -68,10 +74,17 @@ class MarketingEmailsStream(MarketingStream):
         self, context: Optional[dict], next_page_token: Optional[Any]
     ) -> Dict[str, Any]:
         """Return a dictionary of values to be used in URL parameterization."""
-        params: dict = {}
-        if next_page_token:
-            params["offset"] = next_page_token
+        params = super().get_url_params(context, next_page_token)
+        # params['offset'] = params['limit']
+        # if not next_page_token:
+        # params["offset"] = next_page_token
+        if not next_page_token:
+            next_page_token = 0
+        params["offset"] = params["limit"] + next_page_token
         params['orderBy'] = "created"
+        if params["offset"] > self.total_emails:
+            params["offset"] = None
+            next_page_token = None
         return params
 
     schema = Emails.schema
@@ -102,7 +115,7 @@ class MarketingCampaignIdsStream(MarketingStream):
         self, context: Optional[dict], next_page_token: Optional[Any]
     ) -> Dict[str, Any]:
         """Return a dictionary of values to be used in URL parameterization."""
-        params: dict = {}
+        params = super().get_url_params(context, next_page_token)
         if next_page_token:
             params["offset"] = next_page_token
         params['orderBy'] = "created"
@@ -139,7 +152,7 @@ class MarketingCampaignsStream(MarketingStream):
         self, context: Optional[dict], next_page_token: Optional[Any]
     ) -> Dict[str, Any]:
         """Return a dictionary of values to be used in URL parameterization."""
-        params: dict = {}
+        params = super().get_url_params(context, next_page_token)
         if next_page_token:
             params["offset"] = next_page_token
         params['orderBy'] = "created"

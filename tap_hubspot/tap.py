@@ -36,7 +36,7 @@ from tap_hubspot.analytics_streams import (
 STREAM_TYPES = [
     ## CRM
     # AssociationsDealsToCompaniesStream,
-    # ContactsStream,
+    ContactsStream,
     # CompaniesStream,
     # DealsStream,
     # MeetingsStream,
@@ -56,7 +56,7 @@ STREAM_TYPES = [
     WebAnalyticsStream,
 
     ## Analytics
-    AnalyticsViewsStream,
+    # AnalyticsViewsStream,
 
 ]
 

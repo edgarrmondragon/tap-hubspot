@@ -175,7 +175,7 @@ class AssociationsDealsToCompaniesStream(HubspotStream):
     path = "/crm/v4/objects/deals/{deal_id}/associations/companies"
     deal_id = ""
     replication_method = "FULL_TABLE"
-    primary_keys = ["id", "toObjectId"]
+    primary_keys = ["id"]
     state_partitioning_keys = ["id"]
     replication_key = ""
     parent_stream_type = DealsStream
@@ -207,7 +207,7 @@ class AssociationsDealsToContactsStream(HubspotStream):
     path = "/crm/v4/objects/deals/{deal_id}/associations/contacts"
     deal_id = ""
     replication_method = "FULL_TABLE"
-    primary_keys = ["id", "toObjectId"]
+    primary_keys = ["id"]
     state_partitioning_keys = ["id"]
     replication_key = ""
     parent_stream_type = DealsStream
@@ -239,7 +239,7 @@ class AssociationsContactsToDealsStream(HubspotStream):
     path = "/crm/v4/objects/contacts/{contact_id}/associations/deals"
     deal_id = ""
     replication_method = "FULL_TABLE"
-    primary_keys = ["id", "toObjectId"]
+    primary_keys = ["id"]
     state_partitioning_keys = ["id"]
     replication_key = ""
     parent_stream_type = ContactsStream
@@ -271,7 +271,7 @@ class AssociationsContactsToCompaniesStream(HubspotStream):
     path = "/crm/v4/objects/contacts/{contact_id}/associations/companies"
     deal_id = ""
     replication_method = "FULL_TABLE"
-    primary_keys = ["id", "toObjectId"]
+    primary_keys = ["id"]
     state_partitioning_keys = ["id"]
     replication_key = ""
     parent_stream_type = ContactsStream
@@ -303,7 +303,7 @@ class AssociationsCompaniesToContactsStream(HubspotStream):
     path = "/crm/v4/objects/companies/{company_id}/associations/contacts"
     deal_id = ""
     replication_method = "FULL_TABLE"
-    primary_keys = ["id", "toObjectId"]
+    primary_keys = ["id"]
     state_partitioning_keys = ["id"]
     replication_key = ""
     parent_stream_type = CompaniesStream
@@ -335,7 +335,7 @@ class AssociationsCompaniesToDealsStream(HubspotStream):
     path = "/crm/v4/objects/companies/{company_id}/associations/deals"
     deal_id = ""
     replication_method = "FULL_TABLE"
-    primary_keys = ["id", "toObjectId"]
+    primary_keys = ["id"]
     state_partitioning_keys = ["id"]
     replication_key = ""
     parent_stream_type = CompaniesStream

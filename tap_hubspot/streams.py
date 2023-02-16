@@ -96,6 +96,7 @@ class DealsStream(HubspotStream):
         params = super().get_url_params(context, next_page_token)
         params["properties"] = ",".join(self.properties)
         params["archived"] = context["archived"]
+        params["associations"] = "contacts,companies"
         return params
 
     @property

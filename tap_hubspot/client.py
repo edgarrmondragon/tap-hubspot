@@ -174,7 +174,34 @@ class HubspotStream(RESTStream):
         properties.append(th.Property('archived', th.BooleanType()))
         properties.append(th.Property(
                 'properties', th.ObjectType(*internal_properties)
-            ))
+            )
+        )
+        properties.append(
+            th.Property(
+                'associations', th.ObjectType(
+                    th.Property(
+                        'companies', th.ObjectType(
+                            th.Property(
+                                'results', th.ArrayType(
+                                    th.Property("id", th.StringType()),
+                                    th.Property("label", th.StringType())
+                                )
+                            )
+                        )
+                    ),
+                    th.Property(
+                        'contacts', th.ObjectType(
+                            th.Property(
+                                'results', th.ArrayType(
+                                    th.Property("id", th.StringType()),
+                                    th.Property("label", th.StringType())
+                                )
+                            )
+                        )
+                    )
+                )
+            )
+        )
         return th.PropertiesList(*properties).to_dict(), params
 
     def get_properties(self) -> List[dict]:

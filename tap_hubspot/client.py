@@ -176,6 +176,15 @@ class HubspotStream(RESTStream):
                 'properties', th.ObjectType(*internal_properties)
             )
         )
+    #     th.Property("reportPropertyFilters",
+    #     th.ArrayType(
+    #         th.ObjectType(
+    #             th.Property("prop", th.StringType),
+    #             th.Property("op", th.StringType),
+    #             th.Property("args", th.ArrayType(th.StringType))
+    #         )
+    #     )
+    # ),
         properties.append(
             th.Property(
                 'associations', th.ObjectType(
@@ -183,8 +192,10 @@ class HubspotStream(RESTStream):
                         'companies', th.ObjectType(
                             th.Property(
                                 'results', th.ArrayType(
-                                    th.Property("id", th.StringType()),
-                                    th.Property("label", th.StringType())
+                                    th.ObjectType(
+                                        th.Property("id", th.StringType()),
+                                        th.Property("label", th.StringType())
+                                    )
                                 )
                             )
                         )
@@ -192,9 +203,11 @@ class HubspotStream(RESTStream):
                     th.Property(
                         'contacts', th.ObjectType(
                             th.Property(
-                                'results', th.ArrayType(
-                                    th.Property("id", th.StringType()),
-                                    th.Property("label", th.StringType())
+                               'results', th.ArrayType(
+                                    th.ObjectType(
+                                        th.Property("id", th.StringType()),
+                                        th.Property("label", th.StringType())
+                                    )
                                 )
                             )
                         )

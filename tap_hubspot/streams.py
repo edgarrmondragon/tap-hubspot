@@ -16,12 +16,15 @@ class MeetingsStream(HubspotStream):
     name = "meetings"
     path = "/crm/v3/objects/meetings"
     primary_keys = ["id"]
+    partitions = [{"archived": True}, {"archived": False}]
+
 
     def get_url_params(
         self, context: Optional[dict], next_page_token: Optional[Any]
     ) -> Dict[str, Any]:
         params = super().get_url_params(context, next_page_token)
         params["properties"] = ",".join(self.properties)
+        params["archived"] = context["archived"]
         return params
 
     @property
@@ -29,6 +32,13 @@ class MeetingsStream(HubspotStream):
         if self.cached_schema is None:
             self.cached_schema, self.properties = self.get_custom_schema()
         return self.cached_schema
+
+    def get_child_context(self, record: dict, context: Optional[dict]) -> dict:
+        """Return a context dictionary for child streams."""
+        return {
+            "archived": record["archived"],
+            "deal_id": record["id"],
+        }
 
 
 class CallsStream(HubspotStream):

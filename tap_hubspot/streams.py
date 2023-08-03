@@ -18,7 +18,6 @@ class MeetingsStream(HubspotStream):
     primary_keys = ["id"]
     partitions = [{"archived": True}, {"archived": False}]
 
-
     def get_url_params(
         self, context: Optional[dict], next_page_token: Optional[Any]
     ) -> Dict[str, Any]:
